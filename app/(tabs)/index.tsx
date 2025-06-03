@@ -5,8 +5,32 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import axios from 'axios';
+import React from 'react';
+
 
 export default function HomeScreen() {
+
+
+interface Aluno{
+name: string;
+id: number;
+avatar: string;
+}
+const[aluno, setAluno] = React.useState<Aluno[]>([]);
+
+React.useEffect(()=>{
+axios.get("https://662dd23f0547cdcde9df3fbb.mockapi.io/alunos").then((response)=>{
+  setAluno(response.data);
+});
+
+
+},[]);
+
+
+
+
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
