@@ -1,99 +1,52 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
 
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
 import axios from 'axios';
 import React from 'react';
+import { Button, Image, ScrollView, Text, View } from 'react-native';
+import Botao from '../componentes/Botao';
+import Click from '../componentes/Click';
 
+interface IUsers {
+  name: string
+  id: string
+  avatar: string
+}
 
 export default function HomeScreen() {
+const [Users, setUsers] = React.useState<IUsers[]>([])
 
-
-interface Aluno{
-name: string;
-id: number;
-avatar: string;
+const GetUsers = async () =>{
+  const { data } = await axios.get("https://68474fef7dbda7ee7ab21540.mockapi.io/Alunos")
+  setUsers(data)
+  console.log(data)
 }
-const[aluno, setAluno] = React.useState<Aluno[]>([]);
 
-React.useEffect(()=>{
-axios.get("https://662dd23f0547cdcde9df3fbb.mockapi.io/alunos").then((response)=>{
-  setAluno(response.data);
-});
+const ListUsers = () =>{
+   return Users.map(User => {
+    return(
+      <Botao key={User.id}>
+        <Image source={{ uri: User.avatar }} style={{ width: 100, height: 100, borderRadius: 10, marginBottom: 10,}} />
+        <Text>ID: {User.id}</Text>
+        <Text style={{marginBottom: 10}}>Nome: {User.name}</Text>
+        <Button 
+          title='Vamos, clique aqui'
+        />
+      </Botao>
+    )
+   })
+}
 
-
-},[]);
-
-
-
-
+React.useEffect(() => {
+   GetUsers()
+}, [])
 
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+   <ScrollView style={{backgroundColor: 'black'}}>
+   <View style={{flexDirection: 'row', flexWrap: 'wrap', justifyContent:'space-around', padding:10}}>
+      {ListUsers()}
+   </View>
+   <View>
+      <Click />
+   </View>
+   </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
-});
